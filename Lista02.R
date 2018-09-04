@@ -108,10 +108,12 @@ q5 <- function(tamanho = 30){
     y[i] = max(x[2], x[5], x[10])
   } 
   
-  hist(y)
+  hist(y, xlab = "Possíveis Valores do Máximo", ylab = "Frequência", col = "purple",
+       main = "Função de Probabilidade de uma VA Máximo")
 }
 
 ################################# QUESTÃO 6 #################################
+
 
 
 ################################# QUESTÃO 7 #################################
