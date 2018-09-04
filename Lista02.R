@@ -49,12 +49,15 @@ q2 <- function(amostra = 50){
 
 ################################# QUESTÃO 3 #################################
 
+
+################################# QUESTÃO 4 #################################
+
 produto <- function(variavel1, variavel2){
   z <- variavel1 * variavel2
   
   hist(z, xlab = "Possiveis valores de Z", ylab = "Frequencia dos valores de Z",
        main = "Distribuição do Produto de 2 VA's Normais", col = "lightblue")
-
+  
 }
 
 divisao <- function(variavel1, variavel2){
@@ -91,9 +94,6 @@ q3 <- function(tamanhoAmostra = 50){
   
   divisao(x, y)
 }
-
-################################# QUESTÃO 4 #################################
-
 
 ################################# QUESTÃO 5 #################################
 
