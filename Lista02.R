@@ -23,16 +23,28 @@ q1 <- function(){
 ################################# QUESTÃO 2 #################################
 
 tcl <- function(tamanhoAmostra){
-  # Esta funcao toma uma amostra de uma variável aleatoria que representa
-  # a soma de 12 outras variáveis aleatórias uniformemente distribuidas entre 0 e 1
+  # Esta funcao toma uma amostra de uma variável aleatoria X que representa
+  # a soma de 12 outras variáveis aleatórias Y uniformemente distribuidas entre 0 e 1
   
-  x <- replicate(tamanhoAmostra, sum(runif(12)))
-  media_x <- mean(x)
-  var_x <- var(x)
+  x = numeric(tamanhoAmostra) #variável aleatória 
+  medX = numeric(tamanhoAmostra) #médias das variáveis aleatórias xi's
+  varX = numeric(tamanhoAmostra) #variância das variáveis aleatórias xi's
+  
+  for(i in 1:tamanhoAmostra){
+    y = runif(12)
+    x[i] = sum(y)
+    medX[i] = mean(y)
+    varX[i] = var(y)
+  }
+  
+  #Média da amostra X
+  mediaX = sum(medX)
+  #Variância da Variável Aleatória X
+  varianciaX = sum(varX)
   
   hist(x, xlab = "Possíveis Valores de X", ylab = "Frequência dos Valores de X",
        main = "Distribuição de X", col = "grey",
-       sub = paste("Média de X: ", media_x, " e Variancia de X: ", var_x))
+       sub = paste("Média de X: ", mediaX, " e Variancia de X: ", varianciaX))
 }
 
 monteCarlo <- function(){
