@@ -130,3 +130,19 @@ q6 <- function(g_liberdade,tamanho){
 
 ################################# QUESTÃO 7 #################################
 
+q7<- function(prob){
+  #amosra aleatória de uma N(0,1) com tamanho 10000
+  norm7 <- rnorm(10000)
+  #Z=exp(X)
+  Z_norm7 <- exp(norm7)
+  
+  hist(Z_norm7, xlab = "Valores de Z", ylab = "Frequência", col = "darkcyan",
+       main = "Distrição de e^N(0,1)")
+  
+  #Média e desvio padrão de Z=exp(X)
+  media_Znorm7 = mean(Z_norm7)
+  sd_Znorm7 = sd(Z_norm7)
+  
+  #função de probabilidade de Z=exp(X), sendo X~N(0,1)
+  qnorm(prob, mean =media_Znorm7, sd =sd_Znorm7 )
+}
