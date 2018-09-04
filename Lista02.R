@@ -97,6 +97,19 @@ q3 <- function(tamanhoAmostra = 50){
 
 ################################# QUESTÃO 5 #################################
 
+q5 <- function(tamanho = 30){
+  # Esta função escolhe o maior valor entre as posições 2, 5 e 10 do vetor X
+  # X é um vetor randomico de tamanho 10 de uma variável aleatória que segue Normal(0,1)
+  
+  y <- numeric(tamanho)
+  
+  for (i in 1:tamanho){
+    x <- rnorm(10)
+    y[i] = max(x[2], x[5], x[10])
+  } 
+  
+  hist(y)
+}
 
 ################################# QUESTÃO 6 #################################
 
