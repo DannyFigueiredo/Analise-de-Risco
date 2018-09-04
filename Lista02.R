@@ -114,7 +114,19 @@ q5 <- function(tamanho = 30){
 
 ################################# QUESTÃO 6 #################################
 
-
+q6 <- function(g_liberdade,tamanho){
+  # Esta função obtem uma aproximação empírica para chi_quadrado
+  
+  chi_quadrado = numeric(tamanho)
+  
+  for (i in 1:g_liberdade){
+    normal = rnorm(tamanho)^2
+    chi_quadrado = chi_quadrado+normal
+  }
+  
+  hist(chi_quadrado, xlab = "Valores de Chi", ylab = "Frequência", main = "Aproximção para Distribuição Chi",
+       col = "indianred2")
+}
 
 ################################# QUESTÃO 7 #################################
 
