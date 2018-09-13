@@ -133,9 +133,13 @@ q2 <- function(rotaKM = 290, amostra = 3000, probAlvo = 0.5, probProposta = 0.85
   x <- ecdf(CT)
   
   alvo <- quantile(x, probs = probAlvo, names = FALSE)
+  print(paste("O alvo de custo é: $", alvo))
+  
   proposto <- quantile(x, probs = probProposta, names = FALSE)
+  print(paste("O preço proposto é: $", proposto))
   
   contingente <- proposto - alvo
+  print(paste("O valor contingenciado da obra é: $", contingente))
   
 }
 
@@ -152,6 +156,7 @@ q3 <- function(rotaKM = 290, amostra = 3000, regraDeJogo = 0.15, proposta = 4500
 
     print("Aceito a proposta!")
   }else{
+    print( paste("A probablididade do custo total ser maior que $45M é:", quantilProposta))
     print("Rejeito a proposta.")
   }
   
