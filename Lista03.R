@@ -1,84 +1,122 @@
-quantidade <- function(comprimento){
-  # Esta função separa, em um vetor:
-  # 1 - a quandidade de tubos necessário para uma obra com o cumprimento da rota preferida
-  # 2 - a quantidade de tubos que ultrapassam a rota preferida
+library(triangle)
 
-  tubos <- c(260000/8, (comprimento - 260000)/8)
-  tubos
+Material <- function(tamanho, amostra){
+  
+  tam_m <- (tamanho*1000)/8 #quantidade de tubos 
+  
+  #preco da tubulacao
+  precoTub <- rtriangle(amostra, a=725, b=790, c =740)
+  
+  #Custo da tubulação
+  CustoMaterial <- tam_m*precoTub 
+  
+  CustoMaterial
 }
 
-material <- function(rota, amostra, probabilidade){
-  # Esta função calcula o gasto de com tubulação
+Mao_de_Obra <- function(tamanho, amostra){
+  tam_m <- (tamanho*1000)/8 #quantidade de canos 
   
-  library(triangle)
+  #custo para cavar uma vala em horas
+  CustoEscavar <- rtriangle(amostra,a=17,b=23, c=18.5) 
   
-  # vetor de  quantidade de material necessário, dado o padrão de 8m
-  quant <- quantidade(rota)
+  #Tempo para escavar uma vala 
+  tempE <- replicate(100, sum(rtriangle(tam_m, a=12, b=25, c=16)))
+  temE_mean <- mean(tempE)
+  temE_var <- var(tempE)
   
-  # Preço da tubulação a cada 8m
-  preco <- rtriangle(amostra, 725, 790, 740)
+  #O tempo para escavar uma vala tem uma distribuição normal 
+  TempoEscavacao <- rnorm(amostra, mean=temE_mean, sd=sqrt(temE_var))
   
-  # Rota 1 é a rota preferida dos engenheiros
-  rota1 <- quant[1] * preco
-  # Rota 2 é a rota alternativa composta por uma distribuição bernoulli
-  rota2 <- quant[2] * rbinom(amostra, 1, probabilidade) * preco
-  tubulacao <- rota1 + rota2
-  tubulacao
+  #Custo total para escavar
+  
+  CTescavacao <- CustoEscavar * TempoEscavacao
+  
+  #custo de soldagem dos tubos em horas/junção
+  CustoSoldar <- rtriangle(amostra,a=17,b=23, c=18.5)
+  
+  #tempo de soldagem por junção
+  tempS <- replicate(100, sum(rtriangle(tam_m+1, a=4,b=5,c=4.5)))
+  tempS_mean <- mean(tempS)
+  tempS_var <- var(tempS)
+  
+  #tempo de soldagem tem uma distribuição normal
+  TempoSoldagem <- rnorm(amostra, mean= tempS_mean, sd=sqrt(tempS_var))
+  
+  #Custo total para soldagem 
+  
+  CTsoldagem <- TempoSoldagem *CustoSoldar
+  
+  Cenario <- cbind(CTescavacao, CTsoldagem)
+  
+  
+  #Custo total da mao de obra
+  CTmao_de_obra <-apply(Cenario, M=1, sum)
+  
+  CTmao_de_obra
+  
 }
 
-maoDeObra <- function(rota, amostra, probabilidade){
-  # Esta função calcula o custo total da mão de obra
+Servico <- function(tamanho, amostra){
   
-  library(triangle)
+  tam_m <- (tamanho*1000)/8
   
-  # Quantidade base para o calculo de base referente a 8m
-  quant <- quantidade(rota)
+  #Transporte de tubulação 
+  CustoTransporte <- rtriangle(amostra,a=6.1, b=7.4, c=6.6)
+  CTtransporte <- tam_m*CustoTransporte
   
-  tempoEscavacao <- rtriangle(amostra, 12, 25, 16)
-  custoEscavacao <- rtriangle(amostra, 17, 23, 18.5)
-  rota1Escavacao <- quant[1] * tempoEscavacao * custoEscavacao
-  rota2Escavacao <- quant[2] * tempoEscavacao * custoEscavacao * rbinom(amostra, 1, probabilidade)
-  custoTotalEscavacao <- rota1Escavacao * rota2Escavacao
   
-  tempoSoldagem <- rtriangle(amostra, 4, 5, 4.5)
-  custoSoldagem <- rtriangle(amostra, 17, 23, 18.5)
-  rota1Soldagem <- ((quant[1] + 1 ) * tempoSoldagem) * custoSoldagem
-  rota2Soldagem <- (quant[2] * tempoSoldagem) * custoSoldagem * rbinom(amostra, 1, probabilidade)
-  custoTotalSoldagem <- rota1Soldagem + rota2Soldagem
+  #Sistema de Filtragem 
+  CTfiltragem <- rtriangle(amostra, a=165000, b= 188000, c= 173000)
   
-  rotaKm <- rota / 1000
-  custoAcabamento <- rtriangle(amostra, 14000, 17000, 15000)
-  custoTotalAcabamento <- rotaKm * custoAcabamento
   
-  cMaoDeObra <- custoTotalEscavacao + custoTotalSoldagem + custoTotalAcabamento
-  cMaoDeObra
+  #Custo acabamento 
+  CustoAcabamento <- rtriangle(amostra, a=14000,b=17000,c=15000)
+  CTAcabamento <- tamanho * CustoAcabamento
+  
+  Cenario2 <- cbind(CTtransporte, CTfiltragem, CTAcabamento)
+  
+  
+  #Calculo total dos servicos
+  CTservico <- apply(Cenario2, M=1, sum)
+  
+  CTservico
+  
 }
 
-servico <- function(amostra, rota, probabilidade){
-  # Esta funcao calcula o custo total do setor de serviços
-  library(triangle)
+CustoTotal <- function(tamanho, amostra){
   
-  quant <- quantidade(rota)
+  #Usando as funções anteriores para calular o valor de cada área do projeto
+  #Custo certo do Projeto (260 km)
+  Mat <- Material(260, amostra)
+  MO <- Mao_de_Obra(260, amostra) 
+  Serv <- Servico(260, amostra)
   
-  transporte <- rtriangle(amostra, 6.1, 7.4, 6.6)
-  rota1Transporte <- quant[1] * transporte
-  rota2Transporte <- quant[2] * transporte * rbinom(amostra, 1, probabilidade)
-  custoTransporte <- rota1Transporte + rota2Transporte
+  CustoCerto <- Mat + MO + Serv
   
-  filtragem <- rtriangle(amostra, 165000, 188000, 173000) * rbinom(amostra, 1, probabilidade)
-
-  cServico <- custoTransporte + filtragem
-  cServico
-}
-
-custoTotal <- function(amostra, rota, prob){
-  total <- material(rota, amostra, prob) + maoDeObra(rota, amostra, prob) + servico(amostra, rota, prob)
-  total
-}
-
-q1 <- function(rota = 290000, amostra = 3000, prob = 0.35){
-  custo <- custoTotal(amostra, rota, prob)
+  CustoCont <- 0 
   
-  hist(custo)
-  ecdf(custo)
+  if( tamanho > 260){
+    Cont <- tamanho - 260
+    
+    prob <- sample(35:40, 1 )
+    Mat_2 <- Material(Cont, amostra) * rbinom(amostra,1,(prob/100))
+    MO_2 <- Mao_de_Obra(Cont, amostra) * rbinom(amostra,1,(prob/100))
+    Serv_2 <- Servico(Cont, amostra) * rbinom(amostra,1,(prob/100))
+    
+    CustoCont <- Mat_2 + MO_2 + Serv_2
+  }
+  
+  #Custo total
+  CT <- CustoCerto + CustoCont
+  
+  hist(CT, main="Custo total da construção do Gasoduto", col="sienna",
+       xlab = "Custo (USD)", ylab="Frequência")
+  
+  x<- ecdf(CT)
+  plot(x, main = "Função Cumulativa do Custo do Gasoduto",
+       xlab = "Custo (USD)", ylab = "Pr (CT <= x)")
+  
+  #Qual a probabilidade CT<=45000000
+  print("A probablididade do custo total ser maior que $45M é:")
+  x(45000000)
 }
