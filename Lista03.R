@@ -108,6 +108,12 @@ CustoTotal <- function(tamanho, amostra){
   
   #Custo total
   CT <- CustoCerto + CustoCont
+
+}
+
+q1 <- function(rotaKM = 290, amostra = 3000, proposta = 45000000){
+  
+  CT <- CustoTotal(rotaKM, amostra)
   
   hist(CT, main="Custo total da construção do Gasoduto", col="sienna",
        xlab = "Custo (USD)", ylab="Frequência")
@@ -118,5 +124,35 @@ CustoTotal <- function(tamanho, amostra){
   
   #Qual a probabilidade CT<=45000000
   print("A probablididade do custo total ser maior que $45M é:")
-  x(45000000)
+  x(proposta)
+  
+}
+
+q2 <- function(rotaKM = 290, amostra = 3000, probAlvo = 0.5, probProposta = 0.85){
+  CT <- CustoTotal(rotaKM, amostra)
+  x <- ecdf(CT)
+  
+  alvo <- quantile(x, probs = probAlvo, names = FALSE)
+  proposto <- quantile(x, probs = probProposta, names = FALSE)
+  
+  contingente <- proposto - alvo
+  
+}
+
+q3 <- function(rotaKM = 290, amostra = 3000, regraDeJogo = 0.15, proposta = 45000000){
+  CT <- CustoTotal(rotaKM, amostra)
+  x <- ecdf(CT)
+  
+  alvo <- 0.5
+  quantilProposta <- x(proposta)
+  
+  if( (quantilProposta - alvo) >= regraDeJogo){
+    #Qual a probabilidade CT<=45000000
+    print( paste("A probablididade do custo total ser maior que $45M é:", quantilProposta))
+
+    print("Aceito a proposta!")
+  }else{
+    print("Rejeito a proposta.")
+  }
+  
 }
